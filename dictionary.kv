@@ -1,0 +1,78 @@
+<ItemDrawer>:
+    theme_text_color: "Custom"
+    on_press: self.parent.set_color_item(self)
+
+    IconLeftWidget:
+        id: icon
+        icon: root.icon
+        theme_text_color: "Custom"
+        text_color: root.text_color
+
+
+<ContentNavigationDrawer>:
+    orientation: "vertical"
+    padding: "8dp"
+    spacing: "8dp"
+
+    AnchorLayout:
+        anchor_x: "left"
+        size_hint_y: None
+        height: avatar.height
+
+        Image:
+            id: avatar
+            size_hint: None, None
+            anchor_x: "left"
+            source: "data/logo/cat.png"
+
+    MDLabel:
+        text: "Мой словарь"
+        font_style: "Button"
+        adaptive_height: True
+
+    MDLabel:
+        text: "pavlig43@gmail.com"
+        font_style: "Caption"
+        adaptive_height: True
+
+    ScrollView:
+
+        DrawerList:
+            id: md_list
+
+    MDRoundFlatIconButton:
+        icon: 'currency-usd'
+        text: 'Поддержать разработчика'
+        font_style: 'Caption'
+        text_align: 'center'
+        text_color: "#141014"
+
+
+
+
+
+
+
+MDScreen:
+
+    MDNavigationLayout:
+
+        ScreenManager:
+
+            MDScreen:
+
+                MDBoxLayout:
+                    orientation: 'vertical'
+
+                    MDTopAppBar:
+                        title: "Мой словарь"
+                        elevation: 10
+                        left_action_items: [['menu', lambda x: nav_drawer.set_state("open")]]
+                    Widget:
+
+
+        MDNavigationDrawer:
+            id: nav_drawer
+
+            ContentNavigationDrawer:
+                id: content_drawer
