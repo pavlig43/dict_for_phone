@@ -1,3 +1,48 @@
+ScreenManager:
+    id: 'screen_manager'
+    LoginWindow:
+    MainMenu:
+
+<LoginWindow>:
+    name: 'loginwindow'
+    MDCard:
+        FitImage:
+            source:"data/logo/star_sky.png"
+    MDTextField:
+        id: login_field
+        pos_hint:{"center_x": .5, "center_y": .6}
+        fill_color_normal:(0.5, 0.5, 0.5, 0.6)
+        hint_text_color_normal: 'black'
+        size_hint: 0.8, 0.07
+        mode: "round"
+        hint_text: "Почта"
+        halign: "center"
+
+    PasswordMDTextField:
+        id:password_field
+        pos_hint:{"center_x": .5, "center_y": .5}
+        fill_color_normal:(0.5, 0.5, 0.5, 0.6)
+        hint_text_color_normal: 'black'
+        size_hint: 0.8, 0.07
+        mode: "round"
+        hint_text: "Пароль"
+        password: True
+        icon_right: "eye-off"
+        icon_right_color_normal: 'black'
+
+
+    MDFillRoundFlatButton:
+        size_hint: 0.4, 0.07
+        pos_hint:{"center_x": .5, "center_y": .4}
+        text: 'Войти'
+        on_press:root.manager.current = 'mainmenu'
+
+    MDFillRoundFlatButton:
+        size_hint: 0.4, 0.07
+        pos_hint:{"center_x": .5, "center_y": .3}
+        text: 'Регистрация'
+
+
 <ItemDrawer>:
     theme_text_color: "Custom"
     on_press: self.parent.set_color_item(self)
@@ -41,8 +86,7 @@
             id: md_list
 
     MDRoundFlatIconButton:
-        icon: 'currency-usd'
-        text: 'Поддержать разработчика'
+        text: "что нибудь"
         font_style: 'Caption'
         text_align: 'center'
         text_color: "#141014"
@@ -52,27 +96,32 @@
 
 
 
+<MainMenu>
+    name: 'mainmenu'
 
-MDScreen:
+    MDScreen:
 
-    MDNavigationLayout:
+        MDNavigationLayout:
 
-        ScreenManager:
+            ScreenManager:
 
-            MDScreen:
+                MDScreen:
 
-                MDBoxLayout:
-                    orientation: 'vertical'
+                    MDBoxLayout:
+                        orientation: 'vertical'
 
-                    MDTopAppBar:
-                        title: "Мой словарь"
-                        elevation: 10
-                        left_action_items: [['menu', lambda x: nav_drawer.set_state("open")]]
-                    Widget:
+                        MDTopAppBar:
+                            title: "Мой словарь"
+                            elevation: 10
+                            left_action_items: [['menu', lambda x: nav_drawer.set_state("open")]]
+                        Button:
+                            text: '2121'
+                            on_press: root.manager.current = 'loginwindow'
+                        Widget:
 
 
-        MDNavigationDrawer:
-            id: nav_drawer
+            MDNavigationDrawer:
+                id: nav_drawer
 
-            ContentNavigationDrawer:
-                id: content_drawer
+                ContentNavigationDrawer:
+                    id: content_drawer
