@@ -1,5 +1,5 @@
 from kivy.lang import Builder
-from kivy.properties import StringProperty, ListProperty,BooleanProperty
+from kivy.properties import StringProperty, ListProperty,BooleanProperty, ObjectProperty
 from kivy.clock import Clock
 from kivymd.app import MDApp
 from kivymd.theming import ThemableBehavior
@@ -58,11 +58,17 @@ class ContentNavigationDrawer(MDBoxLayout):
 
 
 class ItemDrawer(OneLineIconListItem):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
     icon = StringProperty()
     text_color = ListProperty((0, 0, 0, 1))
+    function = ObjectProperty()
 
 
 class MainMenu(MDScreen):
+    pass
+
+class Lesson(MDScreen):
     pass
 
 
@@ -70,16 +76,43 @@ class DrawerList(MDList):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         icons_item = {
-            "account-box": "Профиль",
-            "folder-multiple-outline": "Мои модули",
-            "school": "Тестирование",
-            "history": "Статистика",
-            'file-cog': 'Настройки',
-            "gmail": "Связь с разработчиком",
+            "account-box": {'text':"Профиль", 'function':self.profile},
+            "folder-multiple-outline": {'text':"Мои модули",'function': None},
+            "school": {'text':"Тестирование",'function': None},
+            "history": {'text':"Статистика",'function': None},
+            'file-cog': {'text': 'Настройки','function': None},
+            r"C:\Users\user\PycharmProjects\dict_for_phone\telegram.ico": {'text':"Связь с разработчиком",'function': None},
         }
-        for icon_name in icons_item.keys():
-            item = ItemDrawer(icon=icon_name, text=icons_item[icon_name])
+
+
+        for icon_name, icon_info  in icons_item.items():
+            item = ItemDrawer(icon=icon_name, text=icon_info['text'], function=icon_info['function'])
+            item.bind(on_release= self.menu_callback)
             self.add_widget(item)
+
+    def profile(self):
+        MDApp.get_running_app().root.current = 'lesson'
+        # a = MDApp.get_running_app()
+        # c = a.root.get_screen('loginwindow')
+        # print(a.root.screens)
+        # print(c)
+
+        # for i in dir(a):
+        #     if not i.startswith('_'):
+        #         print(i)
+
+
+
+
+    def menu_callback(self, instance):
+        if instance.function:
+            instance.function()
+
+
+
+
+
+
 
     def set_color_item(self, instance_item):
         """Called when tap on a menu item."""

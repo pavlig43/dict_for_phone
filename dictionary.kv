@@ -1,10 +1,18 @@
 ScreenManager:
-    id: 'screen_manager'
+
     LoginWindow:
+        name: 'loginwindow'
+
     MainMenu:
+        name: 'mainmenu'
+
+    Lesson:
+        name: 'lesson'
+        MDFillRoundFlatIconButton:
+            on_release: root.current = root.previous()
 
 <LoginWindow>:
-    name: 'loginwindow'
+
     MDCard:
         FitImage:
             source:"data/logo/star_sky.png"
@@ -31,16 +39,20 @@ ScreenManager:
         icon_right_color_normal: 'black'
 
 
-    MDFillRoundFlatButton:
+    MDFillRoundFlatIconButton:
+        icon_right: True
+        icon: 'google'
         size_hint: 0.4, 0.07
         pos_hint:{"center_x": .5, "center_y": .4}
-        text: 'Войти'
+        text: 'Войти c помощью GOOGLE'
         on_press:root.manager.current = 'mainmenu'
 
     MDFillRoundFlatButton:
         size_hint: 0.4, 0.07
         pos_hint:{"center_x": .5, "center_y": .3}
         text: 'Регистрация'
+
+
 
 
 <ItemDrawer>:
@@ -96,32 +108,37 @@ ScreenManager:
 
 
 
+
 <MainMenu>
-    name: 'mainmenu'
 
-    MDScreen:
+    MDNavigationLayout:
 
-        MDNavigationLayout:
+        ScreenManager:
+            id: afdaf
 
-            ScreenManager:
+            MDScreen:
 
-                MDScreen:
+                MDNavigationLayout:
 
-                    MDBoxLayout:
-                        orientation: 'vertical'
+                    ScreenManager:
 
-                        MDTopAppBar:
-                            title: "Мой словарь"
-                            elevation: 10
-                            left_action_items: [['menu', lambda x: nav_drawer.set_state("open")]]
-                        Button:
-                            text: '2121'
-                            on_press: root.manager.current = 'loginwindow'
-                        Widget:
+                        MDScreen:
+
+                            MDBoxLayout:
+                                orientation: 'vertical'
+
+                                MDTopAppBar:
+                                    title: "Мой словарь"
+                                    elevation: 10
+                                    left_action_items: [['menu', lambda x: nav_drawer.set_state("open")]]
+                                Button:
+                                    text: '2121'
+                                    on_press: root.manager.current = 'loginwindow'
+                                Widget:
 
 
-            MDNavigationDrawer:
-                id: nav_drawer
+                    MDNavigationDrawer:
+                        id: nav_drawer
 
-                ContentNavigationDrawer:
-                    id: content_drawer
+                        ContentNavigationDrawer:
+                            id: content_drawer
