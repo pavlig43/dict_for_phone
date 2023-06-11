@@ -1,3 +1,5 @@
+#:include profile.kv
+#:include modules.kv
 ScreenManager:
 
     LoginWindow:
@@ -6,10 +8,6 @@ ScreenManager:
     MainMenu:
         name: 'mainmenu'
 
-    Lesson:
-        name: 'lesson'
-        MDFillRoundFlatIconButton:
-            on_release: root.current = root.previous()
 
 <LoginWindow>:
 
@@ -105,40 +103,29 @@ ScreenManager:
 
 
 
-
-
-
-
 <MainMenu>
 
-    MDNavigationLayout:
+    MDBoxLayout:
+        orientation: 'vertical'
 
+        MDTopAppBar:
+            title: "Мой словарь"
+            elevation: 10
+            left_action_items: [['menu', lambda x: nav_drawer.set_state("open")]]
         ScreenManager:
-            id: afdaf
+            id: mainscreenmanager
 
-            MDScreen:
+            Modules:
+                name: 'modules'
 
-                MDNavigationLayout:
+            Profile:
+                name: 'profile'
 
-                    ScreenManager:
-
-                        MDScreen:
-
-                            MDBoxLayout:
-                                orientation: 'vertical'
-
-                                MDTopAppBar:
-                                    title: "Мой словарь"
-                                    elevation: 10
-                                    left_action_items: [['menu', lambda x: nav_drawer.set_state("open")]]
-                                Button:
-                                    text: '2121'
-                                    on_press: root.manager.current = 'loginwindow'
-                                Widget:
+    MDNavigationDrawer:
+        id: nav_drawer
+        ContentNavigationDrawer:
+            id: content_drawer
 
 
-                    MDNavigationDrawer:
-                        id: nav_drawer
 
-                        ContentNavigationDrawer:
-                            id: content_drawer
+
