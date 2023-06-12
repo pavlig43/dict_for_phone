@@ -13,7 +13,7 @@
         theme_background_color: 'Custom'
         md_bg_color: app.theme_cls.primary_color
         icon_size: dp(30)
-        on_release: root.add_folder
+        on_release: root.open_dialog()
 
 
 
@@ -21,13 +21,17 @@
 
 
 
-<WindowAddFolder>:
-    id: add_folder_dialog
-    size_hint_x: 0.5
-    pos_hint: {'center_x':0.5}
+<DialogFolder>:
+    id: folder_dialog
+    orientation: 'vertical'
+    spacing: "12dp"
+    height: "120dp"
+    size_hint_y: None
+
     MDTextField:
+        id: folder_dialog_text
         hint_text: 'Название папки'
 
-    MDRaisedButton:
-        text: 'Добавить'
+
+
 

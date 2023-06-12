@@ -7,6 +7,7 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.list import OneLineIconListItem, MDList
 from kivy.uix.screenmanager import ScreenManager
 from kivymd.uix.screen import MDScreen
+from kivymd.uix.button import MDFlatButton
 from kivy.properties import NumericProperty
 from kivy.metrics import dp
 from kivymd.uix.textfield import MDTextField
@@ -15,8 +16,6 @@ from functools import partial
 from kivymd.uix.dialog import MDDialog
 import json
 from func import get_list_value
-
-
 
 
 class LoginWindow(MDScreen):
@@ -75,33 +74,77 @@ class MainMenu(MDScreen):
     pass
 
 
-
 class Profile(MDScreen):
     pass
 
 
 class Modules(MDScreen):
-    def add_folder(self):
-        dialog = WindowAddFolder()
-        dialog.open()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.dialog_folder = MDDialog(type="custom",
+                                      content_cls=DialogFolder(),
+                                      buttons=[
+                    MDFlatButton(
+                        text="Добавить",
+                        theme_text_color="Custom",
+                        text_color=self.theme_cls.primary_color,
+                        on_release= self.add_folder
+                    ),
+                    MDFlatButton(
+                        text="Отмена",
+                        theme_text_color="Custom",
+                        text_color=self.theme_cls.primary_color,
+                        on_release= lambda x: self.dialog_folder.dismiss()
+                    ),
+                ],
+                                      )
+
+    def open_dialog(self, *args):
+        self.dialog_folder.open()
+    def add_folder(self,*args):
+        folder_name = self.dialog_folder.content_cls.ids.folder_dialog_text.text
+        folder_dict = self.ids.folder_list.folders
+        if folder_name in folder_dict:
+            message_error = MDDialog(text = 'Папка с таким именем уже существует',
+                                     buttons=[MDFlatButton(
+                                    text = 'ОК',
+                                    on_release = lambda x: message_error.dismiss()
+                                    )])
+            message_error.open()
+        else:
+            folder_dict[folder_name] = {}
+            item = ItemDrawer(icon='folder', text=folder_name)
+            self.ids.folder_list.add_widget(item)
+            with open('folders.json','w') as f:
+                json.dump(folder_dict, f)
+            self.dialog_folder.content_cls.ids.folder_dialog_text.text = ''
+            self.dialog_folder.dismiss()
+
+
+
+
+class DialogFolder(MDBoxLayout):
+    pass
+
+
+
+
+
 
 class FolderList(MDList):
-    def __init__(self,folders=[], **kwargs):
+    def __init__(self, folders=[], **kwargs):
         super().__init__(**kwargs)
-        self.folders = list(get_list_value('folders.json'))
-        for folder in self.folders:
-            item = ItemDrawer(icon= 'folder', text = folder)
+        self.folders = get_list_value('folders.json')
+        for folder in list(self.folders):
+            item = ItemDrawer(icon='folder', text=folder)
             self.add_widget(item)
-
-class WindowAddFolder(MDDialog):
-    pass
 
 
 class DrawerList(MDList):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         icons_item = {
-            "account-box": {'text': "Профиль",  'screen_name': 'profile'},
+            "account-box": {'text': "Профиль", 'screen_name': 'profile'},
             "folder-multiple-outline": {'text': "Мои модули", 'screen_name': 'modules'},
             "school": {'text': "Тестирование", 'screen_name': ''},
             "history": {'text': "Статистика", 'screen_name': ''},
@@ -111,7 +154,7 @@ class DrawerList(MDList):
         }
 
         for icon_name, icon_info in icons_item.items():
-            item = ItemDrawer(icon=icon_name, text=icon_info['text'],screen_name = icon_info['screen_name'] )
+            item = ItemDrawer(icon=icon_name, text=icon_info['text'], screen_name=icon_info['screen_name'])
             item.bind(on_release=self.menu_callback)
             self.add_widget(item)
 

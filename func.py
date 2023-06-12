@@ -14,6 +14,8 @@ def get_list_value(file_name):
     return value
 
 
+
+
 if __name__ == '__main__':
     a = get_list_value('list.json')
     print(a.keys())
