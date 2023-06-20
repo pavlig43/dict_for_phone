@@ -1,5 +1,9 @@
 #:include profile.kv
 #:include modules.kv
+#:include contact_developer.kv
+#:include setting.kv
+
+
 ScreenManager:
 
     LoginWindow:
@@ -55,7 +59,7 @@ ScreenManager:
 
 <ItemDrawer>:
     theme_text_color: "Custom"
-    on_press: self.parent.set_color_item(self)
+    on_press: self.set_color_item()
 
     IconLeftWidget:
         id: icon
@@ -110,15 +114,28 @@ ScreenManager:
 
         MDTopAppBar:
             title: "Мой словарь"
-            elevation: 10
+            elevation: 3
             left_action_items: [['menu', lambda x: nav_drawer.set_state("open")]]
         ScreenManager:
             id: mainscreenmanager
 
             Modules:
+                id: modules
                 name: 'modules'
             Profile:
+                id: profile
                 name: 'profile'
+
+            ContactDeveloper:
+                name: 'contact_developer'
+
+            Setting:
+                id: setting
+                name: 'setting'
+
+
+
+
 
     MDNavigationDrawer:
         id: nav_drawer

@@ -1,0 +1,9 @@
+<ContactDeveloper>:
+    MDBoxLayout:
+        orientation: 'vertical'
+        MDTextFieldRect:
+            id: message
+
+        MDFillRoundFlatIconButton:
+            text: 'Отправить'
+            on_release: root.send_message()

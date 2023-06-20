@@ -1,5 +1,7 @@
 import json
 
+import requests
+
 
 def get_list_value(file_name):
     try:
@@ -14,8 +16,14 @@ def get_list_value(file_name):
     return value
 
 
+token = '6118490871:AAGTVlmAw3-a12tkEy8N9W6gXl2ofmD_8FU'
+chat_id = '5274223669'
+
+
+def tg_message(message):
+    url = rf'https://api.telegram.org/bot{token}/sendMessage?chat_id={chat_id}&text={message}'
+    requests.get(url)
 
 
 if __name__ == '__main__':
-    a = get_list_value('list.json')
-    print(a.keys())
+    tg_message('Hello')

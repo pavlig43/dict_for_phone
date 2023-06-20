@@ -1,24 +1,24 @@
 <Modules>:
-    MDBoxLayout:
-        size_hint_x: 0.5
-        pos_hint: {'center_x':0.5,}
-        ScrollView:
+    ScreenManager:
+        id: folder_screen_manager
 
-            FolderList:
-                id: folder_list
-                spacing: root.height / 10
-    MDIconButton:
-        icon: 'folder-multiple-plus'
-        text_color: app.theme_cls.text_color
-        theme_background_color: 'Custom'
-        md_bg_color: app.theme_cls.primary_color
-        icon_size: dp(30)
-        on_release: root.open_dialog()
+        MDScreen:
+            name: 'folder_screen'
+            MDBoxLayout:
+                size_hint_x: 0.5
+                pos_hint: {'center_x':0.5,}
+                ScrollView:
 
-
-
-
-
+                    FolderList:
+                        id: folder_list
+                        spacing: root.height / 10
+            MDIconButton:
+                icon: 'folder-multiple-plus'
+                text_color: app.theme_cls.text_color
+                theme_background_color: 'Custom'
+                md_bg_color: app.theme_cls.primary_color
+                icon_size: dp(30)
+                on_release: root.open_dialog()
 
 
 <DialogFolder>:
@@ -30,7 +30,66 @@
 
     MDTextField:
         id: folder_dialog_text
-        hint_text: 'Название папки'
+
+
+
+
+<Eximine>:
+
+    ScreenManager:
+        id: eximine_screen_manager
+
+        MDScreen:
+            name: 'eximine_screen'
+
+            MDBoxLayout:
+                size_hint_x: 0.5
+                pos_hint: {'center_x':0.5,}
+                ScrollView:
+                    id: eximine_list_scroll
+
+            MDIconButton:
+                icon: 'folder-multiple-plus'
+                text_color: app.theme_cls.text_color
+                theme_background_color: 'Custom'
+                md_bg_color: app.theme_cls.primary_color
+                icon_size: dp(30)
+                on_release: root.open_dialog()
+
+
+<Cards>:
+    #md_bg_color: app.theme_cls.primary_color
+    MDBoxLayout:
+        orientation: 'vertical'
+        MDCard:
+            size_hint: (0.7,0.5)
+            pos_hint: {'center_x':0.5}
+            MDLabel:
+                id: name_module
+
+
+
+        MDCard:
+            orientation: 'vertical'
+            Button_choice:
+                icon: 'file-cog'
+                text: 'Изменить модуль'
+                #on_release:
+            Button_choice:
+                icon: 'card-multiple-outline'
+                text: 'Повторить карточки'
+                #on_release:
+            Button_choice:
+                icon: 'chair-school'
+                text: 'Тестирование'
+            Button_choice:
+                icon: 'share-variant-outline'
+                text: 'Поделиться модулем'
+<Button_choice@MDRectangleFlatIconButton>:
+    size_hint:(0.5,0.5)
+    pos_hint: {'center_x':0.5, 'center_y':0.5}
+
+
 
 
 
