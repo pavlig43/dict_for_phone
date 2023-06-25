@@ -58,36 +58,107 @@
 
 
 <Cards>:
-    #md_bg_color: app.theme_cls.primary_color
+    name: 'cards'
+    ScreenManager:
+        MDScreen:
+            #md_bg_color: app.theme_cls.primary_color
+            MDBoxLayout:
+                orientation: 'vertical'
+                MDCard:
+                    size_hint: (0.7,0.5)
+                    pos_hint: {'center_x':0.5}
+                    MDLabel:
+                        id: name_module
+
+                        halign: 'center'
+                MDCard:
+                    orientation: 'vertical'
+                    Button_choice:
+                        icon: 'file-cog'
+                        text: 'Изменить модуль'
+                        on_release: root.change_module_screen()
+                    Button_choice:
+                        icon: 'card-multiple-outline'
+                        text: 'Повторить карточки'
+                        on_release: print(type(root.parent.current))
+                    Button_choice:
+                        icon: 'chair-school'
+                        text: 'Тестирование'
+                    Button_choice:
+                        icon: 'share-variant-outline'
+                        text: 'Поделиться модулем'
+                Widget:
+                    size_hint:(0.1,0.1)
+
+<Button_choice@MDRectangleFlatIconButton>:
+    size_hint:(1,1)
+    pos_hint: {'center_x':0.5, 'center_y':0.5}
+
+<ChangeModule>:
     MDBoxLayout:
         orientation: 'vertical'
-        MDCard:
-            size_hint: (0.7,0.5)
-            pos_hint: {'center_x':0.5}
-            MDLabel:
-                id: name_module
+        MDTextField:
+            id:name_field
+            hint_text: 'Имя модуля'
+
+        ScrollView:
+            id: scroll_word
+
+            size_hint: 0.8,0.9
+            pos_hint: {'center_x':0.5,'center_y':0.5}
+
+            MDBoxLayout:
+                id: boxlayout_words
+                orientation: 'vertical'
+
+                size_hint_y: None
+                height: 120 * len(self.children)
 
 
 
-        MDCard:
-            orientation: 'vertical'
-            Button_choice:
-                icon: 'file-cog'
-                text: 'Изменить модуль'
-                #on_release:
-            Button_choice:
-                icon: 'card-multiple-outline'
-                text: 'Повторить карточки'
-                #on_release:
-            Button_choice:
-                icon: 'chair-school'
-                text: 'Тестирование'
-            Button_choice:
-                icon: 'share-variant-outline'
-                text: 'Поделиться модулем'
-<Button_choice@MDRectangleFlatIconButton>:
-    size_hint:(0.5,0.5)
-    pos_hint: {'center_x':0.5, 'center_y':0.5}
+        MDFillRoundFlatButton:
+            pos_hint: {'center_x': 0.5}
+            text: 'Сохранить'
+            on_release: root.save_data()
+        MDIconButton:
+            theme_icon_color: "Custom"
+            icon_color: app.theme_cls.primary_color
+            icon: 'plus-circle'
+            text: 'Добавить'
+            on_release: root.add_word()
+
+
+
+
+
+<WordDef>:
+    orientation: 'vertical'
+
+    canvas.before:
+        Color:
+            rgba: app.theme_cls.primary_color
+        Line:
+            width: 3
+            rectangle: self.x , self.y, self.width, self.height
+
+
+    MDTextField:
+        id: word
+        halign: 'center'
+        size_hint: 0.8,1
+        pos_hint:{'center_x':0.5,'center_y':0.5}
+        hint_text:'Термин'
+        font_size: self.height /4
+
+
+    MDTextField:
+        id:definition
+        halign: 'center'
+
+        size_hint: 0.8,1
+        pos_hint:{'center_x':0.5,'center_y':0.5}
+        font_size: self.height /4
+        hint_text:'Определение'
 
 
 
