@@ -15,8 +15,9 @@ from kivymd.uix.card import MDCard, MDCardSwipe
 from functools import partial
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.label import MDLabel
+from kivymd.uix.menu import MDDropdownMenu
 import json
-from func import get_list_value, tg_message
+from func import get_list_value, tg_message, dictionary_txt, translate_word
 import requests
 from kivymd.uix.pickers import MDColorPicker
 from kivymd.theming import ThemeManager
@@ -193,6 +194,7 @@ class FolderList(MDList):
         message_warning.open()
         message_warning.buttons[0].bind(
             on_release=lambda x: (self.delete_folder(folder), message_warning.dismiss()))
+
     def delete_folder(self, folder):
         self.remove_widget(folder)
         del self.folders[folder.text]
@@ -223,11 +225,13 @@ class EximineList(MDList):
             item.bind(on_release=self.open_module)
             item.ids.icon_right.bind(on_release=lambda x, item=item: self.open_warning_dialog(item))
             self.add_widget(item)
+
     def open_warning_dialog(self, module):
         message_warning = self.parent.parent.parent.parent.parent.message_warning
         message_warning.open()
         message_warning.buttons[0].bind(
             on_release=lambda x: (self.delete_folder(module), message_warning.dismiss()))
+
     def delete_folder(self, module):
         self.remove_widget(module)
         with open('folders.json', 'r') as f:
@@ -327,6 +331,7 @@ class Eximine(MDScreen):
                 json.dump(dct, f)
             self.dialog_folder.dismiss()
         self.dialog_folder.content_cls.ids.folder_dialog_text.text = ''
+
     def open_warning_dialog(self, module):
         self.message_warning.open()
         self.message_warning.buttons[0].bind(
@@ -340,6 +345,7 @@ class Eximine(MDScreen):
             del dct[self.name_folder][module.text]
         with open('folders.json', 'w') as f:
             json.dump(dct, f)
+
 
 class Cards(MDScreen):
     def __init__(self, folder='', module='', **kwargs):
@@ -360,7 +366,7 @@ class Cards(MDScreen):
             word_def = WordDef(word=word, definition=definition)
             self.change_module.ids.boxlayout_words.add_widget(word_def)
             word_def.ids.word.text = word
-            word_def.ids.definition.text = definition
+            word_def.ids.definition.text = ','.join(definition)
 
         sm.current = 'change_module'
 
@@ -385,7 +391,8 @@ class ChangeModule(MDScreen):
         for i in self.ids.boxlayout_words.children:
             if i.ids.word.text in self.all_words_dict:
                 i.ids.word.text += ' '
-            self.all_words_dict[i.ids.word.text] = i.ids.definition.text
+            if i.opacity == 1:
+                self.all_words_dict[i.ids.word.text] = i.ids.definition.text.split(',')
 
         if not self.ids.name_field.text == self.module:
             del self.words[self.folder][self.module]
@@ -393,6 +400,9 @@ class ChangeModule(MDScreen):
         self.words[self.folder][self.module] = self.all_words_dict
         with open('folders.json', 'w') as f:
             json.dump(self.words, f)
+        self.back()
+
+    def back(self):
         self.parent.current = self.parent.previous()
         self.parent.remove_widget(self)
 
@@ -400,9 +410,35 @@ class ChangeModule(MDScreen):
 class WordDef(MDBoxLayout):
     def __init__(self, word='', definition='', **kwargs):
         super().__init__(**kwargs)
-
         self.word = word
         self.definition = definition
+
+    def del_word(self):
+        if self.opacity == 1:
+            self.opacity = 0.2
+        else:
+            self.opacity = 1
+
+    def translate_term(self, instance):
+
+        input_user = self.ids.word.text.lower()
+        app = MDApp.get_running_app()
+        dictionary_txt = app.dictionary_txt
+
+        try:
+            definitions = [{'text': definition,
+                            'viewclass': 'OneLineListItem'} for definition in dictionary_txt[input_user]['translation']]
+        except KeyError:
+            definitions = [{'text': translate_word(input_user),
+                            'viewclass': 'OneLineListItem'}]
+
+            self.menu = MDDropdownMenu(caller=self.ids.definition,
+                                       items=definitions,
+                                       width_mult=4,
+                                       )
+
+
+        self.menu.open()
 
 
 class DrawerList(MDList):
@@ -446,6 +482,7 @@ class ContactDeveloper(MDScreen):
 
 
 class Dictionari(MDApp):
+    dictionary_txt = dictionary_txt()
     theme_cls = ThemeManager()
 
     def build(self):
