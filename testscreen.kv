@@ -1,0 +1,27 @@
+
+<TestScreen>:
+    MDBoxLayout:
+        orientation: 'vertical'
+        MDLabel:
+            id: word_label
+            halign: 'center'
+            text: "Нет слов"
+        MDGridLayout:
+            id: def_grid
+            cols: 1
+
+<ResultScreen>:
+    MDBoxLayout:
+        orientation: 'vertical'
+        MDLabel:
+            id: unknown
+            halign: "center"
+            theme_text_color: "Custom"
+            text_color: 1, 0, 0, 1
+        MDLabel:
+            id: total
+            halign: "center"
+
+        Button:
+            text: 'OK'
+            on_release: root.ok()

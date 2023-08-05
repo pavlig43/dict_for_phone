@@ -1,3 +1,5 @@
+#:include repcardscreen.kv
+#:include testscreen.kv
 <Modules>:
     ScreenManager:
         id: folder_screen_manager
@@ -80,10 +82,11 @@
                     Button_choice:
                         icon: 'card-multiple-outline'
                         text: 'Повторить карточки'
-                        on_release: print(type(root.parent.current))
+                        on_release: root.open_dialog()
                     Button_choice:
                         icon: 'chair-school'
                         text: 'Тестирование'
+                        on_release: root.to_test_screen()
                     Button_choice:
                         icon: 'share-variant-outline'
                         text: 'Поделиться модулем'
@@ -112,7 +115,7 @@
                 orientation: 'vertical'
 
                 size_hint_y: None
-                height: 120 * len(self.children)
+                height: 180 * len(self.children)
 
 
 
@@ -149,9 +152,17 @@
             halign: 'center'
             size_hint: 0.8,1
             pos_hint:{'center_x':0.5,'center_y':0.5}
-            hint_text:'Термин'
+            hint_text:'Термин:'
             font_size: self.height /4
 
+        MDTextField:
+            id: pronunciation
+            font_name: r'C:\Users\user\PycharmProjects\dict_for_phone\venv\Lib\site-packages\kivymd\fonts\FiraSans-Medium.ttf'
+            halign: 'center'
+            size_hint: 0.8,1
+            pos_hint:{'center_x':0.5,'center_y':0.5}
+            hint_text:'Транскрипция'
+            font_size: self.height /4
 
         MDTextField:
             id:definition
@@ -164,6 +175,7 @@
     MDIconButton:
         icon: 'delete'
         on_release: root.del_word()
+
 
 
 
