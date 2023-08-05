@@ -1,0 +1,115 @@
+
+
+<RepCardScreen>:
+    MDBoxLayout:
+        orientation: 'vertical'
+        MDBoxLayout:
+            size_hint: (1,0.2)
+            MDIconButton:
+                icon: 'close'
+                theme_icon_color: "Custom"
+                icon_color: app.theme_cls.primary_color
+                on_release: root.back()
+            MDLabel:
+                id: counter
+                halign: 'center'
+
+            MDIconButton:
+                icon: 'cog'
+                theme_icon_color: "Custom"
+                icon_color: app.theme_cls.primary_color
+                #on_release: print(self.icon_color,dir(self))
+
+        MDSeparator:
+            color: app.theme_cls.primary_color
+            height: dp(2)
+            width: self.parent.width
+
+        MDBoxLayout:
+
+            size_hint: (1,0.1)
+            MDRoundFlatButton:
+                id:point_unknown
+                size_hint_y: 0.9
+                text: '0'
+                md_bg_color: (1, 0, 0, 0.3)
+                text_color: 'red'
+            Widget:
+
+            MDRoundFlatButton:
+                id:point_known
+                size_hint_y: 0.9
+                pos_hint: {'right': 1}
+                text: '0'
+                text_color: 'green'
+                md_bg_color: (0, 1, 0, 0.3)
+
+        Widget:
+            size_hint:(1,0.05)
+
+
+        MDRelativeLayout:
+            size_hint:(0.9,0.8)
+            pos_hint: {'center_x':0.5}
+            canvas:
+                Color:
+                    rgba: 1, 1, 1, 1  # Задайте нужный цвет
+                RoundedRectangle:
+
+                    size: self.size
+                    radius: [15]  # Задайте нужные значения радиуса
+
+            RepCardWord:
+                id: word_card
+                anchor: 'right'
+                MDCardSwipeLayerBox:
+                    radius:15
+
+                    orientation: 'vertical'
+
+                    MDIconButton:
+                        id: volume
+                        icon: 'volume-high'
+                        theme_icon_color: "Custom"
+                        icon_color: app.theme_cls.primary_color
+                        on_release: root.audio(root.ids.word_label.text)
+                    MDLabel:
+                        id: word_label
+                        size_hint:(1,0.5)
+                        halign: 'center'
+
+
+
+
+                    MDLabel:
+                        id: pronunciations_label
+                        size_hint:(1,0.5)
+                        halign: 'center'
+                        #text: '1121'
+
+            MDCardSwipe:
+                id:def_card
+                opacity:0
+
+                MDCardSwipeLayerBox:
+                    radius:15
+
+                    MDLabel:
+                        id: def_label
+                        halign: 'center'
+
+
+
+        Widget:
+            size_hint:(1,0.1)
+
+
+
+
+
+
+
+
+
+
+

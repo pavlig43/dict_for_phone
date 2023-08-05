@@ -1,0 +1,5 @@
+requests~=2.30.0
+googletrans~=4.0.0rc1
+Kivy~=2.2.0rc1
+kivymd~=1.1.1
+pyttsx3~=2.90

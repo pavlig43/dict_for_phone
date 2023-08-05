@@ -1,4 +1,5 @@
 from kivy.lang import Builder
+import random
 from kivy.properties import StringProperty, ListProperty, BooleanProperty, ObjectProperty
 from kivy.clock import Clock
 from kivymd.app import MDApp
@@ -7,7 +8,7 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.list import OneLineIconListItem, MDList, OneLineAvatarIconListItem
 from kivy.uix.screenmanager import ScreenManager
 from kivymd.uix.screen import MDScreen
-from kivymd.uix.button import MDFlatButton
+from kivymd.uix.button import MDFlatButton, MDRaisedButton
 from kivy.properties import NumericProperty
 from kivy.metrics import dp
 from kivymd.uix.textfield import MDTextField
@@ -18,9 +19,11 @@ from kivymd.uix.label import MDLabel
 from kivymd.uix.menu import MDDropdownMenu
 import json
 from func import get_list_value, tg_message, dictionary_txt, translate_word
+from cardswipe import RepCardScreen
 import requests
 from kivymd.uix.pickers import MDColorPicker
 from kivymd.theming import ThemeManager
+from kivymd.uix.selectioncontrol import MDCheckbox
 
 
 class LoginWindow(MDScreen):
@@ -243,6 +246,7 @@ class EximineList(MDList):
     def open_module(self, instance):
 
         sm = self.parent.parent.parent.parent
+
         folder = self.parent.parent.parent.parent.parent.name
         module = instance.text
 
@@ -352,6 +356,7 @@ class Cards(MDScreen):
         super().__init__(**kwargs)
         self.folder = folder
         self.module = module
+        self.words = get_list_value('folders.json')[self.folder][self.module]
         self.ids.name_module.text = f'{self.folder} \n{self.module}'
 
     def change_module_screen(self):
@@ -361,14 +366,56 @@ class Cards(MDScreen):
         except:
             self.change_module = ChangeModule(name='change_module', folder=self.folder, module=self.module)
             sm.add_widget(self.change_module)
-        self.words = get_list_value('folders.json')
-        for word, definition in self.words[self.folder][self.module].items():
-            word_def = WordDef(word=word, definition=definition)
+
+        for word, info in self.words.items():
+            word_def = WordDef(word=word, definition=info['definition'], pronunciation=info['pronuncation'])
             self.change_module.ids.boxlayout_words.add_widget(word_def)
             word_def.ids.word.text = word
-            word_def.ids.definition.text = ','.join(definition)
+            word_def.ids.definition.text = ','.join(info['definition'])
+            word_def.ids.pronunciation.text = info['pronuncation']
 
         sm.current = 'change_module'
+
+    def replace(self, obj):
+        obj_list = list(obj.keys())
+        random.shuffle(obj_list)
+
+        return {i: obj[i] for i in obj_list}
+
+    def open_dialog(self):
+        new_dict = self.replace(self.words)
+        self.dial = MDDialog(text='Перемешать слова?',
+                             buttons=[MDFlatButton(text='ДА',
+                                                   on_release=lambda x: (
+                                                       self.cardswipe_screen(self.replace(new_dict)),
+                                                       self.dial.dismiss())),
+                                      MDFlatButton(text='НЕТ',
+                                                   on_release=lambda x: (
+                                                       self.cardswipe_screen(self.words), self.dial.dismiss()))])
+
+        self.dial.open()
+
+    def cardswipe_screen(self, dct):
+
+        sm = self.parent
+
+        try:
+            sm.get_screen('rep_card_screen')
+        except:
+            self.rep_card_screen = RepCardScreen(name='rep_card_screen', dictionary=dct)
+            sm.add_widget(self.rep_card_screen)
+            sm.current = 'rep_card_screen'
+
+    def to_test_screen(self):
+        sm = self.parent
+        try:
+            sm.get_screen('test_screen')
+        except:
+            self.test_screen = TestScreen(name='test_screen', word_dict=self.replace(self.words))
+            sm.add_widget(self.test_screen)
+            sm.current = 'test_screen'
+        finally:
+            pass
 
 
 class ChangeModule(MDScreen):
@@ -392,13 +439,14 @@ class ChangeModule(MDScreen):
             if i.ids.word.text in self.all_words_dict:
                 i.ids.word.text += ' '
             if i.opacity == 1:
-                self.all_words_dict[i.ids.word.text] = i.ids.definition.text.split(',')
+                self.all_words_dict[i.ids.word.text] = {'pronuncation': i.ids.pronunciation.text,
+                                                        'definition': i.ids.definition.text.split(',')}
 
         if not self.ids.name_field.text == self.module:
             del self.words[self.folder][self.module]
             self.module = self.ids.name_field.text
         self.words[self.folder][self.module] = self.all_words_dict
-        with open('folders.json', 'w') as f:
+        with open('folders.json', 'w', encoding='utf-8') as f:
             json.dump(self.words, f)
         self.back()
 
@@ -407,17 +455,75 @@ class ChangeModule(MDScreen):
         self.parent.remove_widget(self)
 
 
+class TestScreen(MDScreen):
+    def __init__(self, word_dict='', **kwargs):
+        super().__init__(**kwargs)
+        self.unknown = 0
+        self.word_dict = word_dict
+        self.all_words = iter(self.word_dict.keys())
+        self.all_def = [self.word_dict[word]['definition'] for word in self.word_dict]
+        if len(self.all_def) < 4:
+            self.all_def += [''] * (4 - len(self.all_def))
+        self.next_test()
+
+    def next_test(self, *args):
+
+        try:
+            self.ids.def_grid.clear_widgets()
+            word = next(self.all_words)
+            self.ids.word_label.text = word
+            true_def = self.word_dict[word]['definition']
+            definitions = random.sample(self.all_def, 4)
+            if not true_def in definitions:
+                definitions[random.randint(0, 3)] = true_def
+
+            for i in definitions:
+                self.ids.def_grid.add_widget(MDRaisedButton(size_hint=(1, 0.25),
+                                                            text=','.join(i),
+                                                            on_release= lambda x:(
+                                                            self.unknown_test(x,true_def),
+                                                            self.next_test())))
+
+        except StopIteration:
+            self.result_screen =ResultScreen(len(self.word_dict), self.unknown)
+            self.parent.add_widget(self.result_screen)
+            self.result_screen.name = 'result_screen'
+            self.parent.remove_widget(self)
+            self.parent.current = 'result_screen'
+
+    def unknown_test(self, instance, true_def):
+        if instance.text != ','.join(true_def):
+            self.unknown += 1
+class ResultScreen(MDScreen):
+    def __init__(self,total='', unknown=''):
+        super().__init__()
+        self.unknown = unknown
+        self.total = f'Всего {total}'
+        self.ids.unknown.text = f'Неверно {unknown}'
+        self.ids.total.text = f'Всего {total}'
+    def ok(self):
+        self.parent.current = self.parent.previous()
+        self.parent.remove_widget(self)
+
 class WordDef(MDBoxLayout):
-    def __init__(self, word='', definition='', **kwargs):
+    def __init__(self, word='', definition='', pronunciation='', **kwargs):
         super().__init__(**kwargs)
         self.word = word
         self.definition = definition
+        self.pronunciation = pronunciation
 
     def del_word(self):
         if self.opacity == 1:
             self.opacity = 0.2
         else:
             self.opacity = 1
+
+    def choice_definition(self, instance):
+        self.definition = self.ids.definition.text.split(',')
+        if instance not in self.definition:
+            self.definition.append(instance)
+        self.ids.definition.text = ','.join(self.definition).strip(',')
+        self.menu.dismiss()
 
     def translate_term(self, instance):
 
@@ -427,16 +533,23 @@ class WordDef(MDBoxLayout):
 
         try:
             definitions = [{'text': definition,
-                            'viewclass': 'OneLineListItem'} for definition in dictionary_txt[input_user]['translation']]
+                            'viewclass': 'OneLineListItem',
+                            'on_release': lambda d=definition: self.choice_definition(d)} for definition in
+                           dictionary_txt[input_user]['translation']]
         except KeyError:
-            definitions = [{'text': translate_word(input_user),
-                            'viewclass': 'OneLineListItem'}]
+            definition_from_google = translate_word(input_user)
+            definitions = [{'text': definition_from_google,
+                            'viewclass': 'OneLineListItem',
+                            'on_release': lambda d=definition_from_google: self.choice_definition(d)}]
+        try:
+            self.ids.pronunciation.text = dictionary_txt[input_user]['pronunciations']
 
-            self.menu = MDDropdownMenu(caller=self.ids.definition,
-                                       items=definitions,
-                                       width_mult=4,
-                                       )
-
+        except KeyError:
+            pass
+        self.menu = MDDropdownMenu(caller=self.ids.definition,
+                                   items=definitions,
+                                   width_mult=4,
+                                   )
 
         self.menu.open()
 
@@ -447,8 +560,7 @@ class DrawerList(MDList):
         icons_item = {
             "account-box": {'text': "Профиль", 'screen_name': 'profile'},
             "folder-multiple-outline": {'text': "Мои модули", 'screen_name': 'modules'},
-            "school": {'text': "Тестирование", 'screen_name': ''},
-            "history": {'text': "Статистика", 'screen_name': 'history'},
+            "mail": {'text': "Сообщения", 'screen_name': 'history'},
             'file-cog': {'text': 'Настройки', 'screen_name': 'setting'},
             r"C:\Users\user\PycharmProjects\dict_for_phone\telegram.ico": {'text': "Связь с разработчиком",
                                                                            'screen_name': 'contact_developer'},
