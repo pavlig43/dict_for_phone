@@ -8,7 +8,7 @@ from kivymd.uix.card import MDCardSwipe
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.screen import MDScreen
 
-from func import speaker
+
 
 
 class RepCardScreen(MDScreen):
