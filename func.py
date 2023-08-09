@@ -1,6 +1,6 @@
 import json
 
-from telegram.ext import Updater, MessageHandler, Filters
+
 
 import requests
 from googletrans import Translator
@@ -52,13 +52,13 @@ def dictionary_txt():
         return dictionary
 
 
-def handle_message(update, context):
-    message = update.message.text
-    sender_id = update.message.from_user.id
-    sender_username = update.message.from_user.username
-    print("Получено сообщение:", message)
-    print("Получено сообщение от пользователя:", sender_username)
-    print("ID пользователя:", sender_id)
+# def handle_message(update, context):
+#     message = update.message.text
+#     sender_id = update.message.from_user.id
+#     sender_username = update.message.from_user.username
+#     print("Получено сообщение:", message)
+#     print("Получено сообщение от пользователя:", sender_username)
+#     print("ID пользователя:", sender_id)
 
 
 
